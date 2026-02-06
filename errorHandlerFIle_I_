@@ -1,0 +1,61 @@
+/* make the utils folder and inside it make errorHandler.js */
+errorHandler.js > 
+  export class ErrorHandler extends Error {
+      constructor(message, statusCode) {
+          super(message);
+          this.statusCode = statusCode;
+          Error.captureStackTrace(this, this.constructor);
+      }
+  }
+
+__________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+
+/* make the middleware folder and inside it make error.js and catchAsyncError.js */
+error.js >
+  import { ErrorHandler } from "../utils/errorHandler.js";
+  
+  export default (err, req,res,next)=>{
+      err.statusCode = err.statusCode || 500;
+      err.message = err.message || 'Internal server Error';
+  
+      if(err.name === 'castError') {
+          const message = `Resource not found Invalid ${err.path}`;
+          err = new ErrorHandler(message,400);
+      }
+      res.status(err.statusCode).json({
+          success: false,
+          error: err.message
+      })
+  }              // -- error.js
+
+_____________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+  export default (func) => (req, res, next) => {
+      Promise.resolve(func(req,res,next)).catch(next);
+  }             // -- catchAsyncError.js
+
+__________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+
+/* Inside server.js write the following code in order to handle their respective error */
+
+// uncaught exception -- use case to handle undefined variable
+  process.on("uncaughtException",(err)=>{
+      console.log(`Error: ${err.message}`);
+      console.log(`Shutting down the server due to uncaught Exception`);
+      process.exit(1);
+  })        //-- must be written at the top
+
+_____________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+// unhandled Promise Rejection -- purpose to handled incorrect in promise config.env
+  process.on("unhandledRejection",(err)=>{
+      console.log(`Error: ${err.message}`)
+      console.log(`Shutting down the server due to unhandled Promise Rejection`);
+      server.close(()=>{
+          process.exit(1);
+      })
+  })     // -- must be written at the bottom
+
+
