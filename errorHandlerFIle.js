@@ -1,5 +1,5 @@
 /* make the utils folder and inside it make errorHandler.js */
-errorHandler.js > 
+// errorHandler.js > 
   export class ErrorHandler extends Error {
       constructor(message, statusCode) {
           super(message);
@@ -8,11 +8,10 @@ errorHandler.js >
       }
   }               //errorHandler.js
 
-__________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 
 /* make the middleware folder and inside it make error.js and catchAsyncError.js */
-error.js >
+// error.js >
  import { ErrorHandler } from "../utils/errorHandler.js";
 
 export default (err, req,res,next)=>{
@@ -50,13 +49,11 @@ export default (err, req,res,next)=>{
     })
 }                 // -- error.js
 
-_____________________________________________________________________________________________________________________________________________________________________________________________________________________
 
   export default (func) => (req, res, next) => {
       Promise.resolve(func(req,res,next)).catch(next);
   }             // -- catchAsyncError.js
 
-__________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 
 /* Inside server.js write the following code in order to handle their respective error */
@@ -68,13 +65,12 @@ ________________________________________________________________________________
       process.exit(1);
   })        //-- must be written at the top
 
-_____________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 // unhandled Promise Rejection -- purpose to handled incorrect in promise config.env
   process.on("unhandledRejection",(err)=>{
       console.log(`Error: ${err.message}`)
       console.log(`Shutting down the server due to unhandled Promise Rejection`);
-      server.close(()=>{
+      server.close(()=>{    // server = app.listen(...)  
           process.exit(1);
       })
   })     // -- must be written at the bottom
